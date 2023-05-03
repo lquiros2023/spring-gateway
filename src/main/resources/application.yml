@@ -1,0 +1,7 @@
+server:
+  port: 8700
+
+uri:
+  api:
+    clientes: http://localhost:8090
+    cuentas: https://pokeapi.co
