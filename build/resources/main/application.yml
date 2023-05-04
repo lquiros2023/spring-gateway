@@ -1,6 +1,45 @@
 server:
   port: 8700
 
+
 uri:
   api:
     clientes: http://localhost:8090
+    clientes2: http://localhost:8090
+    cuentas: https://pokeapi.co
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter:
+              replenishRate: 10
+              burstCapacity: 20
+              requestedTokens: 1
+        - name: CircuitBreaker
+          args:
+            name: clientsService
+            fallbackUri: forward:/service-fallback
+
+
+      routes:
+        - id: all_clientes
+          uri: http://localhost:8090
+          predicates:
+            - Method=GET
+            - Path=/v1/api/cliente/all
+          filters:
+            - AddRequestHeader=X-GATEWAY-REQUEST-HEADER,GATEWAY-SOLITUD
+            - AddResponseHeader=X-GATEYWAY-RESPONSE-HEADER,GATEWAY_RESPONSE
+
+        - id: cliente_id
+          uri: http://localhost:8090
+          predicates:
+            - Method=GET,POST,PUT
+            - Path=/promerica/clientes-por-id/{id}
+          filters:
+            - RewritePath=/promerica/clientes-por-id/, /v1/api/cliente/
+            - AddRequestHeader=X-GATEWAY-REQUEST-HEADER,GATEWAY-SOLITUD
+            - AddResponseHeader=X-GATEYWAY-RESPONSE-HEADER,GATEWAY_RESPONSE
