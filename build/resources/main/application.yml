@@ -9,6 +9,8 @@ uri:
     cuentas: https://pokeapi.co
 
 spring:
+  application:
+    name: curso-print-gateway
   cloud:
     gateway:
       default-filters:
@@ -43,3 +45,13 @@ spring:
             - RewritePath=/promerica/clientes-por-id/, /v1/api/cliente/
             - AddRequestHeader=X-GATEWAY-REQUEST-HEADER,GATEWAY-SOLITUD
             - AddResponseHeader=X-GATEYWAY-RESPONSE-HEADER,GATEWAY_RESPONSE
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+# Trace every action
+management:
+  tracing:
+    sampling:
+      probability: 1.0
